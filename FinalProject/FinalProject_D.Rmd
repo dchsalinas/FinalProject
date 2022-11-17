@@ -1,0 +1,613 @@
+---
+title: "Final Project: 444"
+author: "Group 6: Lisette Kamper-Hinson, Diana Salinas, and Kearies Donelson"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  word_document: default
+  html_document: default
+always_allow_html: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r load-library, message=FALSE, echo=FALSE}
+options(digits=11)
+pacman::p_load(tidyverse, rmarkdown, htmlwidgets, htmltools, maps, webshot, leaflet, kableExtra, scales, stringr, stringi, mapproj, usmap, rvest, rcis, plotly, cowplot, socviz, RColorBrewer, kableExtra, gridExtra, dplyr)
+library(tinytex) 
+webshot::install_phantomjs(force=TRUE)
+```
+
+Which is the best city for a new postgraduate student to move to based on the average salary of a Computer Science (CS) Major in the area, cost of housing in the area (renting specifically), and percent of computer science related jobs in each major city in the US?
+
+## Major Cities in Each of the States
+
+In this map, we have chosen the most populated cities in each of the 50 states to give information for. Below, you will be able to find information such as average salary, cost of living, and cost of rent.
+
+### What is it exactly? 
+In this context, we are referring to the annual average salary through each state, which was found by averaging together for all counties and areas in the state.
+
+### How it was found:
+
+To find the average salary for each state in our dataset, I used the PUMAs data we had collected and saved into our box drive.  I had to separate the county and state in one of the columns to create two  vectors of state and county names was created. This was used to build an average for each state. Once the data was collected, it was averaged together and then displayed.
+
+Originally Texas had caused some issues when averaging due to the way I had separated the data when creating the vectors. I managed to solve the problem after going back to it.
+
+### Question 1: How is the average salary of a CS major affected by the population and location in each of the major cities? 
+The average salary is affected by region and major cities. By looking at the map, we are able to see how more populated states have a higher average salary compared to less populated states. 
+
+```{r area-diana, warning=FALSE, message=FALSE}
+#library(htmltools)
+# Diana Salinas
+us_statesD <- us_map("state") %>%
+  rename("long" = x) %>%
+  rename("lat" = y) %>%
+  rename("State" = abbr) 
+
+agg_df1 <- read_csv("data/Average.csv")
+
+HPL_map <- left_join(us_statesD, agg_df1, by="State", all=TRUE)
+
+HPL_map %>%
+  ggplot(mapping = aes(x = long, y = lat, group = group, fill = Average)) +
+  geom_polygon(color = "gray", linewidth=0.2) +
+  coord_equal() +
+   scale_fill_gradient(low = "blue", high = "red", name = "Average Salaries", labels = comma) + 
+  labs(title = "Averages Across the States",
+       subtitile = "Diana Salinas") + 
+ 
+  theme_map() 
+```
+
+
+
+
+```{r central-locations, warning=FALSE, message=FALSE}
+#library(htmltools)
+# Diana Salinas
+ central <- read.csv("data/finalCSV.csv", check.names = FALSE)
+
+centralLabel <- sprintf("<b>%s, %s</b>
+                        <p>Average Yearly Salary: $%s</p>
+                        <p>Cost of Living (Yearly): $%s</p>
+                        <p>Cost of Utilities (Montly): $%s</p>
+                        <p>Cost of Groceries (Yearly): $%s</p>
+                        <p>Cost of Housing/Rent (Yearly): $%s</p>", 
+            central$city, central$State, central$`Average Wage in Each State`, central$`Cost of Living`, central$`Cost of Utilities`,central$`Cost of Groceries`, central$`Cost of Housing`) %>%
+            lapply(htmltools::HTML)
+  
+```
+
+## Interactive Map with Major Cities
+
+Currently the location is centered in Oxford since The University of Mississippi. When zooming out, you will be to see the surrounding areas and their information.
+
+### Question 2: Based on the leaflet, do you see a common pattern with the popularity of cities and high population density?
+Yes, there is a common pattern that can be seen based on the leaflet. Most of the bigger and more populated cities tend to be close to bodies of water. This makes sense since when people were settling down and forming towns and such, they wanted to live by a resource they could use for farming, crops, bathing, etc. 
+
+```{r area, warning=FALSE, message=FALSE}
+#library(htmltools)
+# Diana Salinas
+
+mapStates =  map("state", fill = TRUE, plot = FALSE)
+
+central %>%
+  leaflet(options=leafletOptions(zoomSnap=3)) %>%
+  setView(lng=-89.519248, lat=34.366495, zoom=5) %>%
+    addTiles() %>%
+    addMarkers (~long, ~lat, popup=centralLabel, label=centralLabel)
+```
+
+### Question 3. What are the Top 5 Closest Locations to the University of Mississippi for a Computer Science Student to Move to?
+The 5 Closest Locations to The University of Mississippi are..
+
+1. Jackson, MS
+2. Huntsville, AL
+3. Little Rock, AR
+4. Nashville, TN
+5. Atlanta, GA
+
+## Most Populated City for each State and their Average Yearly Income
+Below is a table to specifically see each state and their average yearly income in a quick view
+
+
+
+```{r center-table, warning=FALSE, message=FALSE}
+#library(htmltools)
+# Diana Salinas
+center_table <- read.csv("data/DianaQuestion.csv", check.names = FALSE)
+
+center_table <- center_table %>%
+  rename("States" = states) %>%
+  rename("Cities" = cities) %>%
+  rename("Longitude" = long) %>%
+  rename("Latitude" = lat) %>%
+  rename("Abbreviation" = ab) %>%
+  rename("Average Salary" = average)
+
+kbl(center_table) %>%
+   kable_styling(bootstrap_options = "striped", full_width = FALSE) %>%
+  row_spec(0, background = "#9F2B68", color= "white") %>%
+  row_spec(1:51, color ="#000000")
+```
+
+## Cost of Living
+
+The cost of living index compares the cost of living in a major city to a corresponding metropolitan area. The index incorporates the expense of various living expenses creating an aggregate measure that workforce entrants can use as a benchmark.
+
+To find the cost of living index for each city in our dataset. A vector of state and city names was created and used to build an individual URL for each city. The url were then used to web-scrap the cost of living, cost of housing, cost of groceries and cost of utilities. This was added to a dataframe and written to a csv.
+
+Website used: <https://www.payscale.com/cost-of-living-calculator/>
+
+To calculate the cost of living in each city the index of each city was collected. This tells us the percent above or below the cities cost of living index is.
+
+#### Example
+
+Cost of Living Index fo the US: 100
+
+Cost of Living in Dollars: \$62,064
+
+Wyoming has a cost of living index of 88, 12% lower than the national average.
+
+dollarAmount = (88/100)\*62064
+
+dollarAmount = \$54,616.32
+
+Therefore the cost of living in dollars is \$54,616.32
+
+```{r costLiving-graph, warning=FALSE, message=FALSE}
+#library(htmltools)
+# Lisette Kamper-Hinson
+# average <- read_csv("data/Average.csv")
+# state_Housing <- state_Housing %>%
+#   rename("State" = name)
+# dollarAmount <- dollarAmount %>%
+#   rename("State" = state_name2.count.)
+# finalCSV <- state_Housing
+# finalCSV <- merge(finalCSV, dollarAmount, by= "State")
+# average <- average%>%
+#   rename(abbreviation = State)
+# average <- merge(average, states, by="abbreviation")
+# average <- average%>%
+#   rename("State" = "name" )%>%
+#   mutate(State = str_replace_all(State, "_", " "))%>%
+#   subset(select = c(State, Average))
+# finalCSV <- merge(finalCSV, average, by="State")
+# finalCSV <- finalCSV %>%
+#   mutate(`median_gross_rent` = substr(`median_gross_rent`, 2, nchar(`median_gross_rent`)))%>%
+#   mutate(`median_gross_rent` = str_remove_all(`median_gross_rent`, ","))%>%
+#   mutate(`median_gross_rent` = as.numeric(`median_gross_rent`)*12)%>%
+#   subset(select = c(State, city, Average,  clDollars, hDollars, uDollars, gDollars, median_gross_rent))
+# popCities <- read_csv("data/PopularCities_Diana.csv")
+# popCities <- rename(popCities, State = states)
+# finalCSV <- merge(finalCSV, popCities, by="State")
+# finalCSV <- finalCSV%>%
+#   subset(select = c(ab, State, city, Average,  clDollars, hDollars, uDollars, gDollars, median_gross_rent, long, lat))
+# employmentData <- read_csv("data/employment_data.csv")
+# employmentData <- rename(employmentData, ab = state)
+# finalCSV <- merge(finalCSV, employmentData, by = "ab")
+# finalCSV <- finalCSV%>%
+#   subset(select = c(ab, State, city.x, Average,  clDollars, hDollars, uDollars, gDollars, median_gross_rent, employmentPer1000Jobs, long, lat))%>%
+#   rename(city = city.x)
+# finalCSV <- finalCSV%>%
+#   rename(`Median Gross Rent` = median_gross_rent)%>%
+#   rename(`Cost of Living`= clDollars)%>%
+#   rename(`Cost of Housing` = hDollars)%>%
+#   rename(`Cost of Utilities` = uDollars)%>%
+#   rename(`Cost of Groceries` = gDollars)%>%
+#   rename(`Average Wage in Each State` = Average)%>%
+#   rename(`Employment Per 1000 Jobs` = employmentPer1000Jobs)
+# write_csv(finalCSV, "data/finalCSV.csv")
+finalCSV <- read_csv("data/finalCSV.csv")
+
+costofLiving1 <- finalCSV %>%
+  ggplot() +
+  geom_bar(mapping=aes(x=reorder(State, as.numeric(`Cost of Living`)), y=`Cost of Living`, fill = State), stat = 'identity') + 
+  theme(legend.position="none")+
+  theme(axis.text.x = element_text(angle = 270), axis.text.y = element_blank(),  axis.ticks.y = element_blank(), plot.title = element_text(hjust = 0.5))+
+  labs(title = "Cost of Living in each city labeled by State")+
+  ylab(element_blank())+
+  xlab(element_blank())+
+  coord_polar()
+costofLiving1
+
+costofLiving2 <- finalCSV %>%
+  ggplot() +
+  geom_bar(mapping=aes(x=State, y=`Cost of Living`, fill = State), stat = 'identity') + 
+  theme(legend.position="none")+
+  theme(axis.text.x = element_text(angle = 270), axis.text.y = element_blank(),  axis.ticks.y = element_blank(), plot.title = element_text(hjust = 0.5))+
+  labs(title = "Cost of Living in each city labeled by State")+
+  ylab(element_blank())+
+  xlab(element_blank())+
+  coord_polar()
+costofLiving2
+```
+
+## Median Gross Rent
+
+Gross rent provides information on the monthly housing cost expenses for renters. Gross rent is the contract rent plus the estimated average monthly cost of utilities.
+
+Originally we wanted to use housing information. This included the values of a mortgage, cost to outright buy a home and the cost of living with and without a mortgage. For the majority of us in the room the next step is not buying a home but renting therefore Median Gross Rent was the best choice.
+
+Once the median gross rent of scraped and added to the tibble it was multiplied by 12 the find the yearly rent.
+
+Website used: <https://www.census.gov/quickfacts/fact/table/>
+
+```{r medianRent-graph, warning=FALSE, message=FALSE}
+#library(htmltools)
+# Lisette Kamper-Hinson
+# average <- read_csv("data/Average.csv")
+# state_Housing <- state_Housing %>%
+#   rename("State" = name)
+# dollarAmount <- dollarAmount %>%
+#   rename("State" = state_name2.count.)
+# finalCSV <- state_Housing
+# finalCSV <- merge(finalCSV, dollarAmount, by= "State")
+# average <- average%>%
+#   rename(abbreviation = State)
+# average <- merge(average, states, by="abbreviation")
+# average <- average%>%
+#   rename("State" = "name" )%>%
+#   mutate(State = str_replace_all(State, "_", " "))%>%
+#   subset(select = c(State, Average))
+# finalCSV <- merge(finalCSV, average, by="State")
+# finalCSV <- finalCSV %>%
+#   mutate(`median_gross_rent` = substr(`median_gross_rent`, 2, nchar(`median_gross_rent`)))%>%
+#   mutate(`median_gross_rent` = str_remove_all(`median_gross_rent`, ","))%>%
+#   mutate(`median_gross_rent` = as.numeric(`median_gross_rent`)*12)%>%
+#   subset(select = c(State, city, Average,  clDollars, hDollars, uDollars, gDollars, median_gross_rent))
+# popCities <- read_csv("data/PopularCities_Diana.csv")
+# popCities <- rename(popCities, State = states)
+# finalCSV <- merge(finalCSV, popCities, by="State")
+# finalCSV <- finalCSV%>%
+#   subset(select = c(ab, State, city, Average,  clDollars, hDollars, uDollars, gDollars, median_gross_rent, long, lat))
+# employmentData <- read_csv("data/employment_data.csv")
+# employmentData <- rename(employmentData, ab = state)
+# finalCSV <- merge(finalCSV, employmentData, by = "ab")
+# finalCSV <- finalCSV%>%
+#   subset(select = c(ab, State, city.x, Average,  clDollars, hDollars, uDollars, gDollars, median_gross_rent, employmentPer1000Jobs, long, lat))%>%
+#   rename(city = city.x)
+# finalCSV <- finalCSV%>%
+#   rename(`Median Gross Rent` = median_gross_rent)%>%
+#   rename(`Cost of Living`= clDollars)%>%
+#   rename(`Cost of Housing` = hDollars)%>%
+#   rename(`Cost of Utilities` = uDollars)%>%
+#   rename(`Cost of Groceries` = gDollars)%>%
+#   rename(`Average Wage in Each State` = Average)%>%
+#   rename(`Employment Per 1000 Jobs` = employmentPer1000Jobs)
+# write_csv(finalCSV, "data/finalCSV.csv")
+finalCSV <- read_csv("data/finalCSV.csv")
+medianGrossRent1 <- finalCSV %>%
+  ggplot() +
+  geom_bar(mapping=aes(x=reorder(State, `Median Gross Rent`), y=`Median Gross Rent`, fill = State), stat = 'identity') + 
+  labs(title = "Median Gross Rent in each city labeled by State")+
+  theme(axis.text.x = element_text(angle = 270), axis.text.y = element_blank(), axis.ticks.y = element_blank(), plot.title = element_text(hjust = 0.5))+
+  ylab(element_blank())+
+  xlab(element_blank())+
+  theme(legend.position="none")+
+  coord_polar()
+medianGrossRent1
+
+medianGrossRent2 <- finalCSV %>%
+  ggplot() +
+  geom_bar(mapping=aes(x=State, y=`Median Gross Rent`, fill = State), stat = 'identity') + 
+  labs(title = "Median Gross Rent in each city labeled by State")+
+  theme(axis.text.x = element_text(angle = 270), axis.text.y = element_blank(), axis.ticks.y = element_blank(), plot.title = element_text(hjust = 0.5))+
+  ylab(element_blank())+
+  xlab(element_blank())+
+  theme(legend.position="none")+
+  coord_polar()
+medianGrossRent2
+```
+
+#1) What is the Percentage of Employment in each major city ?
+
+```{r kearies, warning=FALSE, message=FALSE}
+#library(htmltools)
+# Kearies Donelson
+# page <- read_html("https://www.bls.gov/oes/current/oessrcma.htm")
+# 
+# cities <-page %>%
+#   html_nodes('.a-z-list') %>%
+#   html_elements('a') %>%
+#   html_text()
+# 
+# 
+# 
+# urls <-page %>%
+#   html_nodes('.a-z-list') %>%
+#   html_elements('a') %>%
+#   html_attr('href') %>%
+#   str_c('https://www.bls.gov/oes/current/', .)
+# 
+# populus_cities <- c('Huntsville, AL', 'Anchorage, AK', 'Phoenix-Mesa-Scottsdale, AZ',
+#                     'Little Rock-North Little Rock-Conway, AR', 'Los Angeles-Long Beach-Anaheim, CA',
+#                     'Denver-Aurora-Lakewood, CO', 'Bridgeport-Stamford-Norwalk, CT', 
+#                     'Philadelphia-Camden-Wilmington, PA-NJ-DE-MD', 'Washington-Arlington-Alexandria, DC-VA-MD-WV',
+#                     'Jacksonville, FL', 'Atlanta-Sandy Springs-Roswell, GA', 'Urban Honolulu, HI',
+#                     'Boise City, ID', 'Chicago-Naperville-Elgin, IL-IN-WI', 'Indianapolis-Carmel-Anderson, IN',
+#                     'Des Moines-West Des Moines, IA', 'Wichita, KS', 'Louisville/Jefferson County, KY-IN',
+#                     'New Orleans-Metairie, LA', 'Portland-South Portland, ME', 'Baltimore-Columbia-Towson, MD', 
+#                     'Boston-Cambridge-Nashua, MA-NH', 'Detroit-Warren-Dearborn, MI',
+#                     'Minneapolis-St. Paul-Bloomington, MN-WI', 'Jackson, MS', 'Kansas City, MO-KS',
+#                     'Billings, MT', 'Omaha-Council Bluffs, NE-IA', 'Las Vegas-Henderson-Paradise, NV',
+#                     'Manchester, NH', 'Trenton, NJ', 'Albuquerque, NM', 'New York-Newark-Jersey City, NY-NJ-PA',
+#                     'Charlotte-Concord-Gastonia, NC-SC', 'Fargo, ND-MN', 'Columbus, OH',
+#                     'Oklahoma City, OK', 'Portland-Vancouver-Hillsboro, OR-WA', 'Pittsburgh, PA',
+#                     'Providence-Warwick, RI-MA', 'Charleston-North Charleston, SC', 'Sioux Falls, SD',
+#                     'Nashville-Davidson--Murfreesboro--Franklin, TN', 'Houston-The Woodlands-Sugar Land, TX',
+#                     'Salt Lake City, UT', 'Burlington-South Burlington, VT', 'Virginia Beach-Norfolk-Newport News, VA-NC',
+#                     'Seattle-Tacoma-Bellevue, WA', 'Charleston, WV', 'Milwaukee-Waukesha-West Allis, WI', 
+#                     'Cheyenne, WY')
+# 
+# employment_data <- data.frame(cities = cities, urls = urls)
+# 
+# employment_data <- employment_data %>%
+#   filter(cities %in% populus_cities) %>%
+#  distinct() %>%
+#   droplevels()
+# 
+# employment_data$employmentPer1000Jobs <- 0
+# 
+# 
+# for (i in 1:nrow(employment_data)) {
+#   
+#   occupation_code <- read_html(as.character(employment_data$urls[i])) %>%
+#     html_nodes('td:nth_child(1):not(#secondary-nav-td)') %>%
+#     html_text2()
+#   
+#   employment_per_1000_jobs <-read_html(as.character(employment_data$urls[i])) %>%
+#     html_nodes('td:nth_child(6)') %>%
+#     html_text2() %>%
+#     as.numeric()
+#   
+#   scraped_data <-data.frame(occupation_code = occupation_code, employment_per_1000_jobs = employment_per_1000_jobs) %>%
+#     filter(occupation_code == "15-1251")
+#   
+#   employment_data$employmentPer1000Jobs[i] <- scraped_data$employment_per_1000_jobs[1]
+# }
+# 
+# glimpse(employment_data)
+# 
+# employment_data <- employment_data %>%
+#   separate(cities, c('city', 'state'), sep = ',') %>%
+#   mutate_if(is.character, str_trim) %>%
+#   separate(state, c('state'))
+
+#write.csv(employment_data, 'employment_data.csv')
+
+employment_data <- read_csv('data/employment_data.csv')
+statesK <- read_csv('data/data.csv')
+
+#centroid <- usmap_transform(statesK, input_names = c('longitude', 'latitude'), output_names = c('long', 'lat'))
+#employment_data <- left_join(employment_data, centroid, by = 'state')
+#glimpse(employment_data)
+```
+
+### Plotting Employment rate per 1000 for Computer Programmer by each State
+
+
+```{r kearies2 , message=FALSE, echo=FALSE}
+# Kearies Donelson
+# us_states <- us_map("states")
+# us_statesK <- us_states %>%
+#   rename(state = abbr ) 
+# glimpse(us_statesK)
+# 
+# 
+# us_statesK <-left_join(us_states, employment_data, by = 'state') %>%
+#   select(-urls, -city, -latitude, -longitude, -long, -lat, -name)
+#write.csv(us_statesK, 'us_states.csv')
+
+us_statesK <- read_csv('data/us_states.csv')
+
+plot <- ggplot() + 
+  geom_polygon(data=us_statesK, aes(x=x, y=y, group=group, fill = employmentPer1000Jobs))+
+  labs(title = 'Employmet Per 1000 by Major City', subtitle = 'Computer Programmer',
+       fill = 'Employmet_Per_1000')+
+  annotate("text", x= employment_data$long, y=employment_data$lat,
+           label=employment_data$employmentPer1000Jobs, color = 'black', size = 3) +
+  coord_equal() +
+  theme_map() +
+  scale_fill_viridis_c(direction = -1)
+
+ggplotly(plot)
+```
+
+#2) What major city has the highest percentage in?
+
+#3) What are the top five companies in that major city?
+
+### Plotting Top 5 Companies
+
+-   The city with highest employment rate per 1000 for Computer Programmer is Huntsville AL. I found Top Tech Companies from [builtin.com](https://builtin.com/companies/location/huntsville/type/information-technology-companies/cybersecurity-companies?ni=5)
+
+```{r kearies3, message=FALSE, echo=FALSE}
+# Kearies Donelson
+# employment_data %>%
+#   na.omit() %>%
+#   arrange(desc(employmentPer1000Jobs)) %>%
+#   head(1)
+
+top_5 <- read.csv(textConnection(
+  "Name, Address, Long, Lat, City
+The Aerospace Corporation, 5030 Bradford Drive Building 1 Suite 200 Huntsville AL 35805, -86.666784, 34.729233, Huntsville AL
+BigBear.ai, 9668 Madison Blvd. Suite 201 Huntsville AL 35758, -86.780192, 34.666034, Huntsville AL
+The Select Group, 200 Clinton Ave W Suite 310 Huntsville AL 35801, -86.588291, 34.730685, Huntsville AL
+ECS, 1525 Perimeter Pkwy NW Suite 115 Huntsville AL 35806, -86.67325, 34.746079, Huntsville AL
+IBM, 14212 Cochran Rd SW Huntsville AL 35824, -86.75162, 34.668019, Huntsville AL"
+))
+
+top_5Label <- sprintf("<b>%s</b><p>%s</p><p>%s</p>",
+                        top_5$Name, top_5$Address, 
+                        top_5$City) %>%
+        lapply(HTML)
+
+top_5 %>%
+  leaflet(options = leafletOptions(zoomSnap=0.1)) %>%
+  setView(lng = -86.75162, lat = 34.668019, zoom = 10) %>%
+  addTiles() %>%
+  addMarkers(~Long, ~Lat, popup = top_5Label, label = top_5Label)
+```
+
+What are the top 5 most populated cities in the US by state for Computer Science majors based on the criteria we have created, average salary, gross median rent, and percent of computer science related jobs in the area?
+
+## The Top 5 Cities for Post-Grad Computer Science Majors to Move
+
+Note: This list was created based on the following metrics. They must...
+
+1\. have a salary above the national average salary
+
+2\. have a positive Salary vs. Cost of Living value
+
+3\. have a high Employment per 1000 jobs
+
+To find the cities that pass this metric this formula was used:
+
+Salary vs Cost of Living and Rent = (Average Salary in Each State - (Cost of Living+ Median Gross Rent))
+
+Once the Salary vs. Cost of Living and Rent were calculated the negative values were filtered out.
+
+Any city below the national average salary of \$78, 241, according to ziprecruiter, was filtered out.
+
+Slice max was used to find the top 5 cities based on the employment per 1000 jobs available.
+
+```{r top5cities-table, warning=FALSE, message=FALSE}
+#library(htmltools)
+# Lisette Kamper-Hinson
+top5_table <- read.csv("data/Top5Cities.csv", check.names = FALSE)
+top5_table <- top5_table%>%
+  mutate(`Average Salary in Each State` = paste0("$", `Average Salary in Each State`))%>%
+   mutate(`Cost of Living` = paste0("$", `Cost of Living`))%>%
+   mutate(`Median Gross Rent` = paste0("$", `Median Gross Rent`))%>%
+   mutate(`Salary vs Cost of Living and Rent` = paste0("$", `Salary vs Cost of Living and Rent`))
+kbl(top5_table) %>%
+  kable_styling(bootstrap_options = "striped", full_width = FALSE) %>%
+  row_spec(0, background = "#9F2B68", color= "white") %>%
+  row_spec(1:5, color ="#000000")
+```
+
+*Table A*
+
+## What are the main tech companies located in the city?
+
+### Salt Lake City, Utah
+
+SoFi, Overstock, M1,Quickbase and Angle Health
+
+#### Bridgeport, Connecticut
+
+Infosys, Cognizant Technology Solution, Wipro, Amazon, and IBM
+
+#### Newark, New Jersey
+
+Panansonic, KL Software technologies, Gadget Software, Amazon, and DataBank
+
+#### Baltimore, Maryland
+
+Catalyte, Whitebox, ZeroFOX, Zentech Manufacturing and Potomac Laser
+
+#### Milwaukee, Wisconsin
+
+Formlabs FIS, ServiceNow, Wipfli, and Expert Institutes
+
+## Are there any major companies that are headquartered here that affect these results?
+
+#### Salt Lake City, Utah
+
+Daz Productions: a 3D-content and software company specializing in providing rigged 3D human models, associated accessory content, and software to the hobbyist as well as the prosumer market.
+
+#### Bridgeport, Connecticut
+
+Aquarion Water Company: Aquarion Water Company, a subsidiary of Eversource, is the public water supply company for approximately 236,000 customer accounts or more than 750,000 people in 72 cities and towns in Connecticut, Massachusetts and New Hampshire.
+
+#### Newark, New Jersey
+
+Prudential Financial: an American Fortune Global 500 and Fortune 500 company whose subsidiaries provide insurance, retirement planning, investment management, and other products and services to both retail and institutional customers throughout the United States and in over 40 other countries
+
+#### Baltimore, Maryland
+
+T Rowe Price: an American publicly owned global investment management firm that offers funds, subadvisory services, separate account management, and retirement plans and services for individuals, institutions, and financial intermediaries.
+
+#### Milwaukee, Wisconsin
+
+Rockwell Autmation: an American provider of industrial automation whose brands include Allen-Bradley, FactoryTalk software and LifecycleIQ Services.
+
+What are the top 5 mostly populated cities in the US by state that have an average salary above \$78,214, the average salary for a computer science major? (This might differ from the overall top 5 because of gross median rent and percentage of jobs available in the desired field.)
+
+## The cities above the national average salary
+
+```{r aboveAveragecities-table, warning=FALSE, message=FALSE}
+#library(htmltools)
+# Lisette Kamper-Hinson
+aboveAverage_table <- read.csv("data/aboveAverageCities.csv", check.names = FALSE)
+aboveAverage_table <- aboveAverage_table%>%
+  mutate(`Average Salary in Each State` = paste0("$", `Average Salary in Each State`))%>%
+   mutate(`Cost of Living` = paste0("$", `Cost of Living`))%>%
+   mutate(`Median Gross Rent` = paste0("$", `Median Gross Rent`))%>%
+   mutate(`Salary vs Cost of Living and Rent` = paste0("$", `Salary vs Cost of Living and Rent`))
+kbl(aboveAverage_table) %>%
+ kable_styling(bootstrap_options = "striped", full_width = FALSE) %>%
+  row_spec(0, background = "#9F2B68", color= "white") %>%
+  row_spec(1:5, color ="#000000")
+```
+
+*Table B*
+
+Looking through this list it is important to note both Newark, New Jersey and Bridgeport, Connecticut show up in table A and table B. This is important to take into consideration when deciding the number one place for post-graduate computer science majors to move to.
+
+### Now let take a look at the most populated cities on our list.
+
+Those cities are...
+
+1.  New York City, New York
+2.  Los Angeles, California
+3.  Chicago, Illinois
+4.  Houston, Texas
+5.  Phoenix, Arizona
+
+```{r mostpopulatedcities-table, warning=FALSE, message=FALSE}
+#library(htmltools)
+# Lisette Kamper-Hinson
+mostPop_table <- read.csv("data/mostPopulatedCities.csv", check.names = FALSE)
+mostPop_table <- mostPop_table%>%
+  mutate(`Average Salary in Each State` = paste0("$", `Average Salary in Each State`))%>%
+   mutate(`Cost of Living` = paste0("$", `Cost of Living`))%>%
+   mutate(`Median Gross Rent` = paste0("$", `Median Gross Rent`))%>%
+   mutate(`Salary vs Cost of Living and Rent` = paste0("$", `Salary vs Cost of Living and Rent`))
+
+kbl(mostPop_table) %>%
+  kable_styling(bootstrap_options = "striped", full_width = FALSE) %>%
+  row_spec(0, background = "#9F2B68", color= "white") %>%
+  row_spec(1:5, color ="#000000")
+```
+
+The only city to have a positive Salary vs Cost of Living value is Houston, Texas, but the average salary of this city is below the national average therefore taking it out of the running for number one city to move to post-grad.
+
+The other four cities in the list have a negative Salary vs. Cost of Living value also making these cities ineligible to be the number one city.
+
+Also each of the these have a comparably low Employment per 1000 jobs ratio which could be due to the high population density of each of the cities.
+
+## The number one city for post-graduate computer science majors to move to is...
+
+### Newark, New Jersey
+
+```{r bestcity-table, warning=FALSE, message=FALSE}
+#library(htmltools)
+# Lisette Kamper-Hinson
+bestCity_table <- read.csv("data/Newark.csv", check.names = FALSE)
+bestCity_table <- bestCity_table%>%
+  mutate(`Average Salary in Each State` = paste0("$", `Average Salary in Each State`))%>%
+   mutate(`Cost of Living` = paste0("$", `Cost of Living`))%>%
+   mutate(`Median Gross Rent` = paste0("$", `Median Gross Rent`))%>%
+   mutate(`Salary vs Cost of Living and Rent` = paste0("$", `Salary vs Cost of Living and Rent`))
+
+kbl(bestCity_table) %>%
+ kable_styling(bootstrap_options = "striped", full_width = FALSE) %>%
+  row_spec(0, background = "#9F2B68", color= "white") %>%
+  row_spec(1:1, color ="#000000")
+```
+
+Newark, New Jersey is the best city to move to for post-graduate computer science majors. This city has an average salary above the national average, a positive salary vs. cost of living index and has a considerably high employment per 1000 jobs ratio

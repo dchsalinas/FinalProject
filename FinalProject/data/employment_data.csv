@@ -1,0 +1,52 @@
+"","city","state","urls","employmentPer1000Jobs","latitude","longitude","name","long","lat"
+"1","Huntsville","AL","https://www.bls.gov/oes/current/oes_26620.htm",2.371,32.318231,-86.902298,"Alabama",1232466.43224393,-1312794.68928045
+"2","Anchorage","AK","https://www.bls.gov/oes/current/oes_11260.htm",1.533,63.588753,-154.493062,"Alaska",-1267218.62876868,-1935022.55248448
+"3","Phoenix-Mesa-Scottsdale","AZ","https://www.bls.gov/oes/current/oes_38060.htm",0.727,34.048928,-111.093731,"Arizona",-1023194.87705016,-1148959.47872665
+"4","Little Rock-North Little Rock-Conway","AR","https://www.bls.gov/oes/current/oes_30780.htm",1.96,35.20105,-91.831833,"Arkansas",743468.51280056,-1052338.934608
+"5","Los Angeles-Long Beach-Anaheim","CA","https://www.bls.gov/oes/current/oes_31080.htm",0.857,36.778261,-119.417932,"California",-1714807.77425575,-713456.113633418
+"6","Denver-Aurora-Lakewood","CO","https://www.bls.gov/oes/current/oes_19740.htm",NA,39.550051,-105.782067,"Colorado",-495811.915830755,-588494.237821458
+"7","Bridgeport-Stamford-Norwalk","CT","https://www.bls.gov/oes/current/oes_71950.htm",1.663,41.603221,-73.087749,"Connecticut",2188836.96593724,-12852.7411912915
+"8","Philadelphia-Camden-Wilmington","PA","https://www.bls.gov/oes/current/oes_37980.htm",1.031,41.203322,-77.194525,"Pennsylvania",1878612.60466867,-158642.795666945
+"9","Washington-Arlington-Alexandria","DC","https://www.bls.gov/oes/current/oes_47900.htm",1.676,38.905985,-77.033418,"District of Columbia",1958768.42980226,-403461.370105737
+"10","Jacksonville","FL","https://www.bls.gov/oes/current/oes_27260.htm",0.711,27.664827,-81.515754,"Florida",1824781.74696776,-1726349.57080026
+"11","Atlanta-Sandy Springs-Roswell","GA","https://www.bls.gov/oes/current/oes_12060.htm",0.809,32.157435,-82.907123,"Georgia",1606095.25311096,-1264006.39475573
+"12","Urban Honolulu","HI","https://www.bls.gov/oes/current/oes_46520.htm",0.378,19.898682,-155.665857,"Hawaii",-204409.780913804,-2228727.94301957
+"13","Boise City","ID","https://www.bls.gov/oes/current/oes_14260.htm",1.507,44.068202,-114.742041,"Idaho",-1169801.50899777,2959.81658085635
+"14","Chicago-Naperville-Elgin","IL","https://www.bls.gov/oes/current/oes_16980.htm",0.527,40.633125,-89.398528,"Illinois",892206.38201939,-428040.10194993
+"15","Indianapolis-Carmel-Anderson","IN","https://www.bls.gov/oes/current/oes_26900.htm",0.722,40.551217,-85.602364,"Indiana",1209704.74486506,-388617.377127774
+"16","Louisville/Jefferson County","KY","https://www.bls.gov/oes/current/oes_31140.htm",1.091,37.839333,-84.270018,"Kentucky",1373929.64382114,-665717.181341611
+"17","Des Moines-West Des Moines","IA","https://www.bls.gov/oes/current/oes_19780.htm",1.634,41.878003,-93.097702,"Iowa",570831.600762879,-323096.759914684
+"18","Omaha-Council Bluffs","NE","https://www.bls.gov/oes/current/oes_36540.htm",2.133,41.492537,-99.901813,"Nebraska",8181.78919588599,-389946.130269631
+"19","Kansas City","MO","https://www.bls.gov/oes/current/oes_28140.htm",1.024,37.964253,-91.831833,"Missouri",716007.117719546,-746809.323008058
+"20","Wichita","KS","https://www.bls.gov/oes/current/oes_48620.htm",0.578,39.011902,-98.484246,"Kansas",131131.34622709,-664348.315305166
+"21","New Orleans-Metairie","LA","https://www.bls.gov/oes/current/oes_35380.htm",0.685,31.244823,-92.145024,"Louisiana",750888.752195043,-1491581.73066661
+"22","Portland-South Portland","ME","https://www.bls.gov/oes/current/oes_76750.htm",0.846,45.253783,-69.445469,"Maine",2320429.48480242,476890.023565757
+"23","Baltimore-Columbia-Towson","MD","https://www.bls.gov/oes/current/oes_12580.htm",1.272,39.045755,-76.641271,"Maryland",1987011.20380896,-378939.40021159
+"24","Boston-Cambridge-Nashua","MA","https://www.bls.gov/oes/current/oes_71650.htm",1.733,42.407211,-71.382437,"Massachusetts",2290522.77777865,120114.016297827
+"25","Providence-Warwick","RI","https://www.bls.gov/oes/current/oes_77200.htm",0.844,41.580095,-71.477429,"Rhode Island",2314130.47436612,29441.4582130218
+"26","Detroit-Warren-Dearborn","MI","https://www.bls.gov/oes/current/oes_19820.htm",0.964,44.314844,-85.602364,"Michigan",1138026.70915463,25151.3408352446
+"27","Fargo","ND","https://www.bls.gov/oes/current/oes_22020.htm",1.778,47.551493,-101.002012,"North Dakota",-75215.6404908357,284159.756283966
+"28","Minneapolis-St. Paul-Bloomington","MN","https://www.bls.gov/oes/current/oes_33460.htm",0.553,46.729553,-94.6859,"Minnesota",404705.16241762,205690.818273203
+"29","Jackson","MS","https://www.bls.gov/oes/current/oes_27140.htm",0.611,32.354668,-89.398528,"Mississippi",998785.462987436,-1341353.14769211
+"30","Billings","MT","https://www.bls.gov/oes/current/oes_13740.htm",1.258,46.879682,-110.362566,"Montana",-784977.804299342,259746.761739882
+"31","Las Vegas-Henderson-Paradise","NV","https://www.bls.gov/oes/current/oes_29820.htm",1.152,38.80261,-116.419389,"Nevada",-1413472.84624112,-548496.953453124
+"32","Manchester","NH","https://www.bls.gov/oes/current/oes_74950.htm",0.759,43.193852,-71.572395,"New Hampshire",2246583.15226404,198355.82768825
+"33","New York-Newark-Jersey City","NY","https://www.bls.gov/oes/current/oes_35620.htm",1.421,43.299428,-74.217933,"New York",2043287.28243214,139112.84687365
+"34","Trenton","NJ","https://www.bls.gov/oes/current/oes_45940.htm",1.765,40.058324,-74.405661,"New Jersey",2137121.75404268,-213522.850815776
+"35","Albuquerque","NM","https://www.bls.gov/oes/current/oes_10740.htm",1.085,34.97273,-105.032363,"New Mexico",-459956.45078721,-1099893.51770835
+"36","Charlotte-Concord-Gastonia","NC","https://www.bls.gov/oes/current/oes_16740.htm",0.964,35.759573,-79.0193,"North Carolina",1875177.34510584,-790824.055778942
+"37","Virginia Beach-Norfolk-Newport News","VA","https://www.bls.gov/oes/current/oes_47260.htm",0.395,37.431573,-78.656894,"Virginia",1863391.7362735,-600921.144405443
+"38","Columbus","OH","https://www.bls.gov/oes/current/oes_18140.htm",0.624,40.417287,-82.907123,"Ohio",1435382.96329922,-359969.845562466
+"39","Oklahoma City","OK","https://www.bls.gov/oes/current/oes_36420.htm",0.72,35.007752,-97.092877,"Oklahoma",265717.3731929,-1105119.96300459
+"40","Portland-Vancouver-Hillsboro","OR","https://www.bls.gov/oes/current/oes_38900.htm",1.093,43.804133,-120.554201,"Oregon",-1627695.24705284,74623.3992246015
+"41","Pittsburgh","PA","https://www.bls.gov/oes/current/oes_38300.htm",1.082,41.203322,-77.194525,"Pennsylvania",1878612.60466867,-158642.795666945
+"42","Charleston-North Charleston","SC","https://www.bls.gov/oes/current/oes_16700.htm",0.655,33.836081,-81.163725,"South Carolina",1730524.78714479,-1046391.56729273
+"43","Sioux Falls","SD","https://www.bls.gov/oes/current/oes_43620.htm",0.699,43.969515,-99.901813,"South Dakota",7858.02313909814,-114578.3660469
+"44","Nashville-Davidson--Murfreesboro--Franklin","TN","https://www.bls.gov/oes/current/oes_34980.htm",0.6,35.517491,-86.580447,"Tennessee",1212410.40185497,-956536.002398192
+"45","Houston-The Woodlands-Sugar Land","TX","https://www.bls.gov/oes/current/oes_26420.htm",0.717,31.968599,-99.901813,"Texas",9322.2782048184,-1445898.47632443
+"46","Salt Lake City","UT","https://www.bls.gov/oes/current/oes_41620.htm",2.18,39.32098,-111.093731,"Utah",-951952.897725526,-567471.702223381
+"47","Burlington-South Burlington","VT","https://www.bls.gov/oes/current/oes_72400.htm",0.744,44.558803,-72.577841,"Vermont",2120898.43107697,316126.945859
+"48","Seattle-Tacoma-Bellevue","WA","https://www.bls.gov/oes/current/oes_42660.htm",1.804,47.751074,-120.740139,"Washington",-1529205.24562066,506134.815021097
+"49","Charleston","WV","https://www.bls.gov/oes/current/oes_16620.htm",0.994,38.597626,-80.454903,"West Virginia",1681883.36326087,-512456.048461019
+"50","Milwaukee-Waukesha-West Allis","WI","https://www.bls.gov/oes/current/oes_33340.htm",1.072,43.78444,-88.787868,"Wisconsin",896579.144447107,-73262.2077594362
+"51","Cheyenne","WY","https://www.bls.gov/oes/current/oes_16940.htm",NA,43.075968,-107.290284,"Wyoming",-591237.083723564,-187522.873773237
